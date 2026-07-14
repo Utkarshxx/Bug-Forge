@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { TaskModel } from '../models/task.js';
 import { ProjectModel } from '../models/project.js';
+import { CommentModel } from '../models/comment.js';
 import { taskSchema } from '../validators/schemas.js';
 import { respond } from '../utils/api.js';
 import { recordActivity } from '../services/activity-service.js';
@@ -82,10 +83,12 @@ export const updateTask = async (req: Request, res: Response) => {
 };
 export const deleteTask = async (req: Request, res: Response) => {
   const task = await TaskModel.findByIdAndDelete(req.params.taskId);
-  if (task)
+  if (task) {
     await recordActivity(req.user!.id, 'task.deleted', {
       project: task.project.toString(),
       task: task.id,
     });
+    await CommentModel.deleteMany({ task: task.id });
+  }
   return task ? respond(res, 200, 'Task deleted') : respond(res, 404, 'Task not found');
 };
