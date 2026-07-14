@@ -19,7 +19,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const [notificationCount, setNotificationCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     const pollNotifications = () => {
       void api<Array<{ readAt?: string }>>('/notifications').then((notifications) =>
         setNotificationCount(notifications.filter((notification) => !notification.readAt).length),
@@ -80,7 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             aria-label="Toggle theme"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {mounted && theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </Button>
         </header>
         <div className="mx-auto max-w-7xl p-6">{children}</div>
