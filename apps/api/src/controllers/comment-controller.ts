@@ -55,7 +55,7 @@ export const updateComment = async (req: Request, res: Response) => {
       });
   }
   return comment
-    ? respond(res, 200, 'Comment updated', comment)
+    ? respond(res, 200, 'Comment updated', await comment.populate('author', 'name email avatarUrl'))
     : respond(res, 404, 'Comment not found');
 };
 export const deleteComment = async (req: Request, res: Response) => {
