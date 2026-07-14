@@ -9,17 +9,25 @@ const canAccessProject = async (projectId: string, userId: string, role: unknown
 };
 
 export const requireProjectAccess = async (req: Request, res: Response, next: NextFunction) => {
-  const permitted = await canAccessProject(
-    String(req.params.projectId),
-    req.user!.id,
-    req.user!.role,
-  );
-  return permitted ? next() : respond(res, 404, 'Project not found');
+  try {
+    const permitted = await canAccessProject(
+      String(req.params.projectId),
+      req.user!.id,
+      req.user!.role,
+    );
+    return permitted ? next() : respond(res, 404, 'Project not found');
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const requireTaskAccess = async (req: Request, res: Response, next: NextFunction) => {
-  const task = await TaskModel.findById(req.params.taskId).select('project');
-  if (!task) return respond(res, 404, 'Task not found');
-  const permitted = await canAccessProject(task.project.toString(), req.user!.id, req.user!.role);
-  return permitted ? next() : respond(res, 404, 'Task not found');
+  try {
+    const task = await TaskModel.findById(req.params.taskId).select('project');
+    if (!task) return respond(res, 404, 'Task not found');
+    const permitted = await canAccessProject(task.project.toString(), req.user!.id, req.user!.role);
+    return permitted ? next() : respond(res, 404, 'Task not found');
+  } catch (error) {
+    next(error);
+  }
 };
