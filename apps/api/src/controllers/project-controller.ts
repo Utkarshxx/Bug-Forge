@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
 import { ProjectModel } from '../models/project.js';
+import { TaskModel } from '../models/task.js';
+import { CommentModel } from '../models/comment.js';
 import { projectSchema } from '../validators/schemas.js';
 import { respond } from '../utils/api.js';
 import { recordActivity } from '../services/activity-service.js';
@@ -50,7 +52,15 @@ export const deleteProject = async (req: Request, res: Response) => {
     _id: req.params.projectId,
     owner: req.user!.id,
   });
-  if (project) await recordActivity(req.user!.id, 'project.deleted', { project: project.id });
+  if (project) {
+    await recordActivity(req.user!.id, 'project.deleted', { project: project.id });
+    const tasks = await TaskModel.find({ project: project.id }).select('_id');
+    const taskIds = tasks.map((t) => t._id);
+    await Promise.all([
+      CommentModel.deleteMany({ task: { $in: taskIds } }),
+      TaskModel.deleteMany({ project: project.id }),
+    ]);
+  }
   return project ? respond(res, 200, 'Project deleted') : respond(res, 404, 'Project not found');
 };
 export const archiveProject = async (req: Request, res: Response) => {
