@@ -17,7 +17,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!token) return setReady(true);
     api<User>('/auth/me')
       .then(setUser)
-      .catch(() => localStorage.removeItem('accessToken'))
+      .catch(() => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      })
       .finally(() => setReady(true));
   }, []);
   const signIn = async (email: string, password: string) => {
