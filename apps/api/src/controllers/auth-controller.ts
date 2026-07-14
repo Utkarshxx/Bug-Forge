@@ -43,8 +43,7 @@ export const refresh = async (req: Request, res: Response) => {
 };
 export const logout = async (req: Request, res: Response) => {
   if (req.user) {
-    req.user.refreshToken = undefined;
-    await req.user.save();
+    await UserModel.updateOne({ _id: req.user.id }, { $unset: { refreshToken: 1 } });
   }
   return respond(res, 200, 'Signed out');
 };
