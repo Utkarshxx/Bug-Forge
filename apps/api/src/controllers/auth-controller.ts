@@ -58,7 +58,7 @@ export const profile = async (req: Request, res: Response) =>
 export const updateProfile = async (req: Request, res: Response) => {
   const values = registerSchema
     .pick({ name: true })
-    .extend({ avatarUrl: z.string().url().optional() })
+    .extend({ avatarUrl: z.union([z.string().url(), z.literal(''), z.null()]).optional() })
     .parse(req.body);
   Object.assign(req.user!, values);
   await req.user!.save();
