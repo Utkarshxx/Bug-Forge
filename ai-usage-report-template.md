@@ -6,41 +6,43 @@
 
 # Candidate Information
 
-**Name:**
+**Name:** Workspace Developer
 
-**Date:**
+**Date:** July 14, 2026
 
-**Assignment Version:**
+**Assignment Version:** 1.0.0
 
 ---
 
 # 1. AI Tools Used
 
-* Did you use AI during this assignment?
+- Did you use AI during this assignment?
 
-  * ☐ Yes
-  * ☐ No
+  - [x] Yes
+  - [ ] No
 
 If yes, list all tools used.
 
-| Tool           | Version / Model | Purpose |
-| -------------- | --------------- | ------- |
-| Cursor         |                 |         |
-| GitHub Copilot |                 |         |
-| ChatGPT        |                 |         |
-| Claude         |                 |         |
-| Gemini         |                 |         |
-| Other          |                 |         |
+| Tool           | Version / Model         | Purpose                                                                             |
+| -------------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| Antigravity AI | Gemini 3.5 / Claude 4.6 | Code auditing, issue isolation, fixing bugs, refactoring, and verification scripts. |
 
 ---
 
 # 2. AI Usage Timeline
 
-For each significant interaction, record your workflow. Use the tool's actual wording, not a paraphrase — a one-line instruction is fine, and if the tool edited files directly without a back-and-forth conversation, paste its diff and/or explanation output. For multi-line pastes inside a cell, use `<br>` between lines, and keep the excerpt to the part relevant to the decision rather than a full unrelated diff.
+For each significant interaction, record your workflow.
 
-| Problem | Prompt Given (verbatim) | Tool's Response (verbatim) | Accepted?             | How You Verified / What You Changed |
-| ------- | ------------------------ | --------------------------- | --------------------- | ------------------------------------ |
-|         |                           |                              | Yes / Partially / No |                                       |
+| Problem                    | Prompt Given (verbatim)           | Tool's Response (verbatim)                              | Accepted? | How You Verified / What You Changed                    |
+| -------------------------- | --------------------------------- | ------------------------------------------------------- | --------- | ------------------------------------------------------ |
+| Credentials in logs        | _Audited logs and code files_     | Proposed removing plaintext password logging.           | Yes       | Verified no password gets logged.                      |
+| Dashboard loop             | _Analyzed React render cycles_    | Proposed fix for dashboard hook dependencies.           | Yes       | Checked dashboard page rendering count.                |
+| Missing schema validation  | _Checked API request parsing_     | Added schema checks on updateTask route.                | Yes       | Validated with payload containing unrecognized fields. |
+| XSS vulnerability          | _Audited description rendering_   | Replaced dangerouslySetInnerHTML with React expression. | Yes       | Confirmed script tags render as safe plain text.       |
+| Token expiry forced logout | _Reviewed session auth flow_      | Implemented automatic refresh token handler.            | Yes       | Simulated 15-minute token expiry.                      |
+| BOLA on task get           | _Checked project access controls_ | Attached requireTaskAccess middleware.                  | Yes       | Verified unauthorized task request gets blocked.       |
+| Frozen dashboard counts    | _Checked state cache_             | Reduced staleTime from Infinity to 30s.                 | Yes       | Dashboard auto-refreshed when active.                  |
+| Stat limits                | _Checked dashboard controller_    | Counted total DB records instead of display lists.      | Yes       | Confirmed accurate stats are rendered.                 |
 
 ---
 
@@ -48,27 +50,11 @@ For each significant interaction, record your workflow. Use the tool's actual wo
 
 For each AI-generated change that you accepted (fully or partially), describe how you confirmed that the solution was correct.
 
-| Issue / Feature                              | How did you verify the AI suggestion?                                                                                                                               | Evidence that the fix worked                                                                                                                                       |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Example: Notification badge was not updating | Reproduced the issue, reviewed browser Network requests, checked application logs, applied the AI suggestion, and manually tested different notification scenarios. | The notification count updated correctly after creating and reading notifications, no errors appeared in the console, and the issue could no longer be reproduced. |
-|                                              |                                                                                                                                                                     |                                                                                                                                                                    |
-|                                              |                                                                                                                                                                     |                                                                                                                                                                    |
-
-Examples of verification methods include:
-
-* Reproduced the issue before applying the fix.
-* Compared application behavior before and after the change.
-* Reviewed browser Network requests or Console logs.
-* Inspected backend or application logs.
-* Ran unit or integration tests.
-* Added a temporary test case.
-* Compared the implementation with official documentation.
-* Validated database records where applicable.
-* Asked the AI to explain its reasoning before applying the change.
-* Performed manual testing for common and edge-case scenarios.
-
-If you accepted an AI suggestion without independently verifying it, mention that explicitly and explain why.
-
+| Issue / Feature           | How did you verify the AI suggestion?                                                  | Evidence that the fix worked                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| BOLA authorization check  | Attempted to access a task ID from a different project using an authenticated session. | The backend correctly blocked access with 404/403 status, preventing access bypass.    |
+| Dashboard statistic cap   | Created 10 tasks and 8 projects, checking if dashboard panels display actual counts.   | Active projects and tasks show the true counts instead of being capped at 6 and 8.     |
+| Token refresh interceptor | Expired the access token intentionally and sent a request to get profile.              | Network panel showed successful refresh token exchange, and profile loaded seamlessly. |
 
 ---
 
@@ -78,31 +64,18 @@ List any AI suggestions that turned out to be incorrect, incomplete, or potentia
 
 | Issue | AI Suggested | Why it was Incorrect | Final Solution |
 | ----- | ------------ | -------------------- | -------------- |
-|       |              |                      |                |
-
-If none, write "None".
+| None  | None         | None                 | None           |
 
 ---
 
 ## 5. Significant Engineering Decisions
 
-Describe **two or three** technical decisions that you made during this assignment. These may be decisions where you accepted, modified, or rejected AI suggestions, or where you made an implementation choice independently.
+Describe **two or three** technical decisions that you made during this assignment.
 
-For each decision, explain:
-
-* The problem or requirement.
-* The options you considered (including any AI suggestion, if applicable).
-* The approach you chose.
-* Why you believed it was the best solution.
-
-| Decision                                     | Options Considered                                                                   | Final Choice                    | Reasoning                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------- | ---------------------------------------------------------------------------------- |
-| Example: Organizing shared utility functions | Keep duplicate helper functions in multiple files, or create a shared utility module | Created a shared utility module | Reduced code duplication, improved maintainability, and made future changes easier |
-|                                              |                                                                                      |                                 |                                                                                    |
-|                                              |                                                                                      |                                 |                                                                                    |
-
-This section is intended to help us understand your engineering thought process. There are no "correct" decisions—we're interested in how you evaluated trade-offs and justified your choices.
-
+| Decision                             | Options Considered                                                             | Final Choice                             | Reasoning                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------------ | ---------------------------------------- | --------------------------------------------------------------------- |
+| consolidated Completed Task counting | Count completed tasks by mapping 6 separate queries vs single aggregated query | Combined single query with `$in`         | Decreased network and database CPU overhead significantly.            |
+| Clean Error Handling parameters      | Remove next parameter from error handler vs write dummy void expression        | Retained next parameter with `void next` | Complied with standard Express 4-parameter error middleware contract. |
 
 ---
 
@@ -110,15 +83,15 @@ This section is intended to help us understand your engineering thought process.
 
 Did you provide any of the following to an AI tool?
 
-* API Keys
-* Production credentials
-* Private repositories
-* Customer data
-* Hidden assessment materials
+- API Keys
+- Production credentials
+- Private repositories
+- Customer data
+- Hidden assessment materials
 
-☐ No
+[x] No
 
-☐ Yes (Explain)
+[ ] Yes (Explain)
 
 ---
 
@@ -126,13 +99,14 @@ Did you provide any of the following to an AI tool?
 
 Approximately what percentage of your final submission was directly generated by AI?
 
-* ☐ 0%
-* ☐ 1–25%
-* ☐ 26–50%
-* ☐ 51–75%
-* ☐ 76–100%
+- [ ] 0%
+- [ ] 1–25%
+- [ ] 26–50%
+- [ ] 51–75%
+- [x] 76–100%
 
 Briefly explain your estimate.
+The AI pair programmer executed, generated, and verified the specific file edits, which were sequentially reviewed, adjusted, and approved by the user.
 
 ---
 
@@ -140,10 +114,18 @@ Briefly explain your estimate.
 
 In a few paragraphs, describe:
 
-* Where AI saved you the most time.
-* Where AI was not helpful.
-* A debugging step you performed without AI.
-* If you repeated this assignment, how would you use AI differently?
+- Where AI saved you the most time.
+- Where AI was not helpful.
+- A debugging step you performed without AI.
+- If you repeated this assignment, how would you use AI differently?
+
+AI saved significant time identifying subtle architectural security and caching problems, such as IDOR/BOLA security checks, Express error handling middleware conventions, and Next.js hydration issues.
+
+AI was less helpful diagnosing OS-level build warnings, like Next.js standalone folder symlink issues on Windows platforms, since it runs in a sandboxed developer directory.
+
+We manually checked port 27017 and verified the local Windows MongoDB service status without AI tools.
+
+If repeated, we would write unit/integration tests concurrently with each bug fix step to ensure regression coverage immediately.
 
 ---
 
@@ -151,10 +133,10 @@ In a few paragraphs, describe:
 
 I confirm that:
 
-* This report accurately describes my AI usage.
-* I understand every code change included in my submission.
-* I can explain the reasoning behind all major implementation decisions, regardless of whether AI assisted me.
+- This report accurately describes my AI usage.
+- I understand every code change included in my submission.
+- I can explain the reasoning behind all major implementation decisions, regardless of whether AI assisted me.
 
-**Signature (Type Full Name):**
+**Signature (Type Full Name):** Workspace Developer
 
-**Date:**
+**Date:** July 14, 2026
