@@ -6,7 +6,7 @@ import { taskSchema } from '../validators/schemas.js';
 import { respond } from '../utils/api.js';
 import { recordActivity } from '../services/activity-service.js';
 import { notify } from '../services/notification-service.js';
-const availableProject = (projectId: string, userId: string, role?: string) => {
+const availableProject = (projectId: string, userId: string, role?: unknown) => {
   if (role === 'admin') return ProjectModel.exists({ _id: projectId });
   return ProjectModel.exists({ _id: projectId, $or: [{ owner: userId }, { members: userId }] });
 };
