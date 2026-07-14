@@ -5,11 +5,13 @@ import { taskSchema } from '../validators/schemas.js';
 import { respond } from '../utils/api.js';
 import { recordActivity } from '../services/activity-service.js';
 import { notify } from '../services/notification-service.js';
-const availableProject = (projectId: string, userId: string) =>
-  ProjectModel.exists({ _id: projectId, $or: [{ owner: userId }, { members: userId }] });
+const availableProject = (projectId: string, userId: string, role?: string) => {
+  if (role === 'admin') return ProjectModel.exists({ _id: projectId });
+  return ProjectModel.exists({ _id: projectId, $or: [{ owner: userId }, { members: userId }] });
+};
 export const listTasks = async (req: Request, res: Response) => {
   const projectId = String(req.params.projectId);
-  if (!(await availableProject(projectId, req.user!.id)))
+  if (!(await availableProject(projectId, req.user!.id, req.user!.role)))
     return respond(res, 404, 'Project not found');
   const { status, assignee } = req.query;
   const filter: Record<string, unknown> = { project: projectId };
@@ -26,7 +28,7 @@ export const listTasks = async (req: Request, res: Response) => {
 };
 export const createTask = async (req: Request, res: Response) => {
   const projectId = String(req.params.projectId);
-  if (!(await availableProject(projectId, req.user!.id)))
+  if (!(await availableProject(projectId, req.user!.id, req.user!.role)))
     return respond(res, 404, 'Project not found');
   const values = taskSchema.parse(req.body);
   const task = await TaskModel.create({ ...values, project: projectId, createdBy: req.user!.id });
@@ -38,7 +40,12 @@ export const createTask = async (req: Request, res: Response) => {
       `You were assigned “${task.title}”`,
       `/tasks/${task.id}`,
     );
-  return respond(res, 201, 'Task created', task);
+  return respond(
+    res,
+    201,
+    'Task created',
+    await task.populate('assignee createdBy', 'name email avatarUrl'),
+  );
 };
 export const getTask = async (req: Request, res: Response) => {
   const task = await TaskModel.findById(req.params.taskId).populate(
@@ -66,7 +73,12 @@ export const updateTask = async (req: Request, res: Response) => {
       `You were assigned “${task.title}”`,
       `/tasks/${task.id}`,
     );
-  return respond(res, 200, 'Task updated', task);
+  return respond(
+    res,
+    200,
+    'Task updated',
+    await task.populate('assignee createdBy', 'name email avatarUrl'),
+  );
 };
 export const deleteTask = async (req: Request, res: Response) => {
   const task = await TaskModel.findByIdAndDelete(req.params.taskId);
